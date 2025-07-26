@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quiz App</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    .quiz-container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      width: 90%;
+      max-width: 500px;
+    }
+
+    .quiz-header {
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      font-size: 24px;
+      color: #333;
+    }
+
+    .option {
+      margin: 10px 0;
+    }
+
+    button {
+      width: 100%;
+      background: #4CAF50;
+      color: white;
+      padding: 10px;
+      margin-top: 20px;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #45a049;
+    }
+
+    .result {
+      font-size: 18px;
+      font-weight: bold;
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .correct {
+      color: green;
+    }
+
+    .wrong {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+
+<div class="quiz-container">
+  <div class="quiz-header">
+    <h2 id="question">Loading...</h2>
+    <div id="options"></div>
+    <button onclick="submitAnswer()">Submit</button>
+    <div class="result" id="feedback"></div>
+  </div>
+</div>
+
+<script>
+  const quizData = [
+    {
+      question: "What is the capital of France?",
+      options: ["London", "Berlin", "Paris", "Rome"],
+      correct: "Paris"
+    },
+    {
+      question: "Which language is used for web apps?",
+      options: ["Python", "JavaScript", "C++", "Java"],
+      correct: "JavaScript"
+    },
+    {
+      question: "HTML stands for?",
+      options: ["Hyper Trainer Marking Language", "Hyper Text Markup Language", "Hyper Text Marketing Language", "High Text Markup Language"],
+      correct: "Hyper Text Markup Language"
+    }
+  ];
+
+  let currentQuestion = 0;
+  let score = 0;
+
+  function loadQuestion() {
+    const q = quizData[currentQuestion];
+    document.getElementById("question").innerText = q.question;
+
+    const optionsDiv = document.getElementById("options");
+    optionsDiv.innerHTML = "";
+
+    q.options.forEach(opt => {
+      const optionElem = document.createElement("div");
+      optionElem.classList.add("option");
+      optionElem.innerHTML = `
+        <label>
+          <input type="radio" name="option" value="${opt}"> ${opt}
+        </label>
+      `;
+      optionsDiv.appendChild(optionElem);
+    });
+
+    document.getElementById("feedback").innerText = "";
+  }
+
+  function submitAnswer() {
+    const selected = document.querySelector('input[name="option"]:checked');
+    if (!selected) {
+      alert("Please select an answer!");
+      return;
+    }
+
+    const answer = selected.value;
+    const correct = quizData[currentQuestion].correct;
+
+    const feedbackDiv = document.getElementById("feedback");
+    if (answer === correct) {
+      feedbackDiv.innerText = "Correct!";
+      feedbackDiv.className = "result correct";
+      score++;
+    } else {
+      feedbackDiv.innerText = `Wrong! Correct Answer: ${correct}`;
+      feedbackDiv.className = "result wrong";
+    }
+
+    // Move to next question after 1.5s
+    setTimeout(() => {
+      currentQuestion++;
+      if (currentQuestion < quizData.length) {
+        loadQuestion();
+      } else {
+        document.querySelector(".quiz-header").innerHTML = `
+          <h2>Your Score: ${score} / ${quizData.length}</h2>
+          <button onclick="restartQuiz()">Restart Quiz</button>
+        `;
+      }
+    }, 1500);
+  }
+
+  function restartQuiz() {
+    currentQuestion = 0;
+    score = 0;
+    loadQuestion();
+  }
+
+  loadQuestion();
+</script>
+
+</body>
+</html>
